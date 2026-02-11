@@ -33,8 +33,8 @@ public class AuthorCotroller {
 
     @GetMapping
     public Page<Author> findAllAuthors(@RequestParam(defaultValue = "0") int page,
-                                       @RequestParam(defaultValue = "10") int size,
-                                       @RequestParam(defaultValue = "surname") String orderBy,
+                                       @RequestParam(defaultValue = "3") int size,
+                                       @RequestParam(defaultValue = "nome") String orderBy,
                                        @RequestParam(defaultValue = "asc") String sortCriteria) {
         return this.authorService.findAllAuthors(page, size, orderBy, sortCriteria);
     }

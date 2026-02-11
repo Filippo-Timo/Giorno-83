@@ -1,8 +1,10 @@
 package filippotimo.Giorno_83.services;
 
 import filippotimo.Giorno_83.Exceptions.NotFoundException;
+import filippotimo.Giorno_83.entities.Author;
 import filippotimo.Giorno_83.entities.BlogPost;
 import filippotimo.Giorno_83.payloads.NewBlogPostPayload;
+import filippotimo.Giorno_83.repositories.AuthorsRepository;
 import filippotimo.Giorno_83.repositories.BlogPostsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,10 +19,12 @@ import java.util.Random;
 public class BlogPostService {
 
     private final BlogPostsRepository blogPostsRepository;
+    private final AuthorsRepository authorsRepository;
 
     @Autowired
-    public BlogPostService(BlogPostsRepository blogPostsRepository) {
+    public BlogPostService(BlogPostsRepository blogPostsRepository, AuthorsRepository authorsRepository) {
         this.blogPostsRepository = blogPostsRepository;
+        this.authorsRepository = authorsRepository;
     }
 
     // 1. GET -> Torna una lista di Blog Post
@@ -42,13 +46,16 @@ public class BlogPostService {
 
     public BlogPost saveBlogPost(NewBlogPostPayload blogPostPayload) {
 
+        Author author = authorsRepository.findById(blogPostPayload.getAutohorId()).orElseThrow(() -> new NotFoundException(blogPostPayload.getAutohorId()));
+
         BlogPost newBlogPost = new BlogPost(
                 blogPostPayload.getCategoria(),
                 blogPostPayload.getTitolo(),
                 blogPostPayload.getContenuto(),
                 blogPostPayload.getTempoDiLettura(),
-                blogPostPayload.getAutohor()
+                author
         );
+
         Random rndm = new Random();
         int nRandom1 = rndm.nextInt(500);
         int nRandom2 = rndm.nextInt(500);
