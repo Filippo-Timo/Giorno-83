@@ -88,13 +88,13 @@ public class AuthorCotroller {
     // 6. PATCH /123/avatar -> Modifica l'avatar dell'autore in particolare
 
     @PatchMapping("/{authorId}/avatar")
-    public Author uploadImage(@RequestParam("profile_picture") MultipartFile file, @PathVariable Long userId) {
+    public Author uploadImage(@RequestParam("profile_picture") MultipartFile file, @PathVariable Long authorId) {
         // profile_picture deve corrispondere ESATTAMENTE al campo del Form Data dove viene inserito il file
         // se così non è il file non verrà trovato
 
-        Author authorModified = this.authorService.findByIdAndUploadAvatar(userId, file);
+        Author authorModified = this.authorService.findByIdAndUploadAvatar(authorId, file);
 
         return authorModified;
     }
-    
+
 }
