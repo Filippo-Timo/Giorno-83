@@ -116,7 +116,7 @@ public class AuthorService {
             // ...aggiorno l'utente cambiandogli l'url dell'avatar
             found.setAvatar(imageUrl);
             // 5. Return dell'url
-            return found;
+            return authorsRepository.save(found);
 
         } catch (IOException e) {
             throw new RuntimeException(e);
