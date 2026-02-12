@@ -13,6 +13,7 @@ package filippotimo.Giorno_83.controllers;
 import filippotimo.Giorno_83.Exceptions.ValidationException;
 import filippotimo.Giorno_83.entities.BlogPost;
 import filippotimo.Giorno_83.payloads.NewBlogPostDTO;
+import filippotimo.Giorno_83.payloads.UpdateBlogPostDTO;
 import filippotimo.Giorno_83.services.BlogPostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -71,8 +72,17 @@ public class BlogPostController {
     // 4. PUT /blogPosts/123 -> Modifica lo specifico blog post (BlogPost)
 
     @PutMapping("/{blogPostId}")
-    public BlogPost findBlogPostByIdAndUpdate(@PathVariable Long blogPostId, @RequestBody NewBlogPostDTO newBlogPostDTO) {
-        return this.blogPostService.findByIdAndUpdateBlogPost(blogPostId, newBlogPostDTO);
+    public BlogPost findBlogPostByIdAndUpdate(@PathVariable Long blogPostId, @RequestBody @Validated UpdateBlogPostDTO updateBlogPostDTO, BindingResult validationResult) {
+        if (validationResult.hasErrors()) {
+            List<String> errorsList = validationResult.getFieldErrors()
+                    .stream()
+                    .map(fieldError -> fieldError.getDefaultMessage())
+                    .toList();
+
+            throw new ValidationException(errorsList);
+        } else {
+            return this.blogPostService.findByIdAndUpdateBlogPost(blogPostId, updateBlogPostDTO);
+        }
     }
 
     // 5. DELETE /blogPosts/123 -> Cancella lo specifico blog post (void)

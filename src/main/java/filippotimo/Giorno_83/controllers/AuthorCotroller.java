@@ -72,7 +72,7 @@ public class AuthorCotroller {
     // 4. PUT /authors/123 -> Modifica lo specifico autore (Author)
 
     @PutMapping("/{authorId}")
-    public Author findAuthorByIdAndUpdate(@PathVariable Long authorId, @RequestBody NewAuthorDTO newAuthorDTO) {
+    public Author findAuthorByIdAndUpdate(@PathVariable Long authorId, @RequestBody @Validated NewAuthorDTO newAuthorDTO, BindingResult validationResult) {
         return this.authorService.findByIdAndUpdateAuthor(authorId, newAuthorDTO);
     }
 

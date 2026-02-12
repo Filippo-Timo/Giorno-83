@@ -4,6 +4,7 @@ import filippotimo.Giorno_83.Exceptions.NotFoundException;
 import filippotimo.Giorno_83.entities.Author;
 import filippotimo.Giorno_83.entities.BlogPost;
 import filippotimo.Giorno_83.payloads.NewBlogPostDTO;
+import filippotimo.Giorno_83.payloads.UpdateBlogPostDTO;
 import filippotimo.Giorno_83.repositories.AuthorsRepository;
 import filippotimo.Giorno_83.repositories.BlogPostsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,14 +71,14 @@ public class BlogPostService {
 
     // 4. PUT -> Modifica lo specifico Blog post
 
-    public BlogPost findByIdAndUpdateBlogPost(Long blogPostId, NewBlogPostDTO newBlogPostDTO) {
+    public BlogPost findByIdAndUpdateBlogPost(Long blogPostId, UpdateBlogPostDTO updateBlogPostDTO) {
 
         BlogPost found = this.findBlogPostById(blogPostId);
 
-        found.setCategoria(newBlogPostDTO.categoria());
-        found.setTitolo(newBlogPostDTO.titolo());
-        found.setContenuto(newBlogPostDTO.contenuto());
-        found.setTempoDiLettura(newBlogPostDTO.tempoDiLettura());
+        found.setCategoria(updateBlogPostDTO.categoria());
+        found.setTitolo(updateBlogPostDTO.titolo());
+        found.setContenuto(updateBlogPostDTO.contenuto());
+        found.setTempoDiLettura(updateBlogPostDTO.tempoDiLettura());
 
         BlogPost modifiedBlogPost = this.blogPostsRepository.save(found);
 
