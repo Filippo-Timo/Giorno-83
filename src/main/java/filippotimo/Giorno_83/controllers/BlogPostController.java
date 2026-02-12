@@ -21,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -93,5 +94,16 @@ public class BlogPostController {
         this.blogPostService.findByIdAdDeleteBlogPost(blogPostId);
     }
 
+    // 6. PATCH /123/cover -> Modifica la cover del BlogPost in particolare
+
+    @PatchMapping("/{authorId}/avatar")
+    public BlogPost uploadImage(@RequestParam("profile_picture") MultipartFile file, @PathVariable Long blogPostId) {
+        // profile_picture deve corrispondere ESATTAMENTE al campo del Form Data dove viene inserito il file
+        // se così non è il file non verrà trovato
+
+        BlogPost authorModified = this.blogPostService.findByIdAndUploadCover(blogPostId, file);
+
+        return authorModified;
+    }
 
 }

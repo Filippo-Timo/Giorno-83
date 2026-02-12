@@ -1,5 +1,8 @@
 package filippotimo.Giorno_83.services;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
+import filippotimo.Giorno_83.Exceptions.NotEmptyException;
 import filippotimo.Giorno_83.Exceptions.NotFoundException;
 import filippotimo.Giorno_83.entities.Author;
 import filippotimo.Giorno_83.entities.BlogPost;
@@ -13,7 +16,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.Map;
 import java.util.Random;
 
 @Service
@@ -21,11 +27,13 @@ public class BlogPostService {
 
     private final BlogPostsRepository blogPostsRepository;
     private final AuthorsRepository authorsRepository;
+    private final Cloudinary cloudinaryUploader;
 
     @Autowired
-    public BlogPostService(BlogPostsRepository blogPostsRepository, AuthorsRepository authorsRepository) {
+    public BlogPostService(BlogPostsRepository blogPostsRepository, AuthorsRepository authorsRepository, Cloudinary cloudinaryUploader) {
         this.blogPostsRepository = blogPostsRepository;
         this.authorsRepository = authorsRepository;
+        this.cloudinaryUploader = cloudinaryUploader;
     }
 
     // 1. GET -> Torna una lista di Blog Post
@@ -92,6 +100,29 @@ public class BlogPostService {
     public void findByIdAdDeleteBlogPost(Long blogPostId) {
         BlogPost found = this.findBlogPostById(blogPostId);
         this.blogPostsRepository.delete(found);
+    }
+
+    // 6. PATCH -> Modifica la cover del BlogPost in particolare
+
+    public BlogPost findByIdAndUploadCover(Long blogPostId, MultipartFile file) {
+        // 1. Controlli (es. dimensione non può superare tot, oppure tipologia file solo .gif...)
+        if (file.isEmpty()) throw new NotEmptyException();
+        // 2. Find by id del BlogPost...
+        BlogPost found = this.findBlogPostById(blogPostId);
+        // 3. Upload del file su Cloudinary
+        try {
+            Map result = cloudinaryUploader.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
+
+            String imageUrl = (String) result.get("secure_url");
+            // 4. Cloudinary ci torna l'url dell'immagine che salviamo dentro il BlogPost trovato
+            // ...aggiorno l'utente cambiandogli l'url dell'avatar
+            found.setCover(imageUrl);
+            // 5. Return del BlogPost
+            return found;
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

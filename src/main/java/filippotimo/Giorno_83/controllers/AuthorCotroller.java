@@ -20,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -84,4 +85,16 @@ public class AuthorCotroller {
         this.authorService.findByIdAdDeleteAuthor(authorId);
     }
 
+    // 6. PATCH /123/avatar -> Modifica l'avatar dell'autore in particolare
+
+    @PatchMapping("/{authorId}/avatar")
+    public Author uploadImage(@RequestParam("profile_picture") MultipartFile file, @PathVariable Long userId) {
+        // profile_picture deve corrispondere ESATTAMENTE al campo del Form Data dove viene inserito il file
+        // se così non è il file non verrà trovato
+
+        Author authorModified = this.authorService.findByIdAndUploadAvatar(userId, file);
+
+        return authorModified;
+    }
+    
 }
