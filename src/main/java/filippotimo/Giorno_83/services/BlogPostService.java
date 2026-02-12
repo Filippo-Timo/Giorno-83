@@ -3,7 +3,7 @@ package filippotimo.Giorno_83.services;
 import filippotimo.Giorno_83.Exceptions.NotFoundException;
 import filippotimo.Giorno_83.entities.Author;
 import filippotimo.Giorno_83.entities.BlogPost;
-import filippotimo.Giorno_83.payloads.NewBlogPostPayload;
+import filippotimo.Giorno_83.payloads.NewBlogPostDTO;
 import filippotimo.Giorno_83.repositories.AuthorsRepository;
 import filippotimo.Giorno_83.repositories.BlogPostsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,15 +44,15 @@ public class BlogPostService {
 
     // 3. POST -> Crea un Blog Post
 
-    public BlogPost saveBlogPost(NewBlogPostPayload blogPostPayload) {
+    public BlogPost saveBlogPost(NewBlogPostDTO newBlogPostDTO) {
 
-        Author author = authorsRepository.findById(blogPostPayload.getAutohorId()).orElseThrow(() -> new NotFoundException(blogPostPayload.getAutohorId()));
+        Author author = authorsRepository.findById(newBlogPostDTO.autohorId()).orElseThrow(() -> new NotFoundException(newBlogPostDTO.autohorId()));
 
         BlogPost newBlogPost = new BlogPost(
-                blogPostPayload.getCategoria(),
-                blogPostPayload.getTitolo(),
-                blogPostPayload.getContenuto(),
-                blogPostPayload.getTempoDiLettura(),
+                newBlogPostDTO.categoria(),
+                newBlogPostDTO.titolo(),
+                newBlogPostDTO.contenuto(),
+                newBlogPostDTO.tempoDiLettura(),
                 author
         );
 
@@ -70,14 +70,14 @@ public class BlogPostService {
 
     // 4. PUT -> Modifica lo specifico Blog post
 
-    public BlogPost findByIdAndUpdateBlogPost(Long blogPostId, NewBlogPostPayload blogPostPayload) {
+    public BlogPost findByIdAndUpdateBlogPost(Long blogPostId, NewBlogPostDTO newBlogPostDTO) {
 
         BlogPost found = this.findBlogPostById(blogPostId);
 
-        found.setCategoria(blogPostPayload.getCategoria());
-        found.setTitolo(blogPostPayload.getTitolo());
-        found.setContenuto(blogPostPayload.getContenuto());
-        found.setTempoDiLettura(blogPostPayload.getTempoDiLettura());
+        found.setCategoria(newBlogPostDTO.categoria());
+        found.setTitolo(newBlogPostDTO.titolo());
+        found.setContenuto(newBlogPostDTO.contenuto());
+        found.setTempoDiLettura(newBlogPostDTO.tempoDiLettura());
 
         BlogPost modifiedBlogPost = this.blogPostsRepository.save(found);
 

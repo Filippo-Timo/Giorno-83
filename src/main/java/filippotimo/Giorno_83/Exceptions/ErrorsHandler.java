@@ -1,6 +1,7 @@
 package filippotimo.Giorno_83.Exceptions;
 
 import filippotimo.Giorno_83.payloads.ErrorsPayload;
+import filippotimo.Giorno_83.payloads.ErrorsWithListDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -28,7 +29,12 @@ public class ErrorsHandler {
     public ErrorsPayload handleGenericServerError(Exception ex) {
         ex.printStackTrace();
         return new ErrorsPayload("C'è stato un imprevisto, ci scusiamo per il disagio e la preghiamo a riprovare più tardi!", LocalDateTime.now());
+    }
 
+    @ExceptionHandler(ValidationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST) // 400
+    public ErrorsWithListDTO handleValidationException(ValidationException ex) {
+        return new ErrorsWithListDTO(ex.getMessage(), LocalDateTime.now(), ex.getErrorsMessages());
     }
 
 }

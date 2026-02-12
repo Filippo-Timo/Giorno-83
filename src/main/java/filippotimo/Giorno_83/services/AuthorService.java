@@ -3,7 +3,7 @@ package filippotimo.Giorno_83.services;
 import filippotimo.Giorno_83.Exceptions.BadRequestException;
 import filippotimo.Giorno_83.Exceptions.NotFoundException;
 import filippotimo.Giorno_83.entities.Author;
-import filippotimo.Giorno_83.payloads.NewAuthorPayload;
+import filippotimo.Giorno_83.payloads.NewAuthorDTO;
 import filippotimo.Giorno_83.repositories.AuthorsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -39,19 +39,19 @@ public class AuthorService {
 
     // 3. POST -> Crea un Author
 
-    public Author saveAuthor(NewAuthorPayload authorPayload) {
+    public Author saveAuthor(NewAuthorDTO authorDTO) {
 
-        this.authorsRepository.findByEmail(authorPayload.getEmail()).ifPresent(author -> {
+        this.authorsRepository.findByEmail(authorDTO.email()).ifPresent(author -> {
             throw new BadRequestException("L'email " + author.getEmail() + " è già in uso!");
         });
 
         Author newAuthor = new Author(
-                authorPayload.getNome(),
-                authorPayload.getCognome(),
-                authorPayload.getEmail(),
-                authorPayload.getDataDiNascita()
+                authorDTO.nome(),
+                authorDTO.cognome(),
+                authorDTO.email(),
+                authorDTO.dataDiNascita()
         );
-        newAuthor.setAvatar("https://ui-avatars.com/api?name=" + authorPayload.getNome() + "+" + authorPayload.getCognome());
+        newAuthor.setAvatar("https://ui-avatars.com/api?name=" + authorDTO.nome() + "+" + authorDTO.cognome());
 
         Author savedAuthor = this.authorsRepository.save(newAuthor);
 
@@ -62,20 +62,20 @@ public class AuthorService {
 
     // 4. PUT -> Modifica lo specifico Blog post
 
-    public Author findByIdAndUpdateAuthor(Long authorId, NewAuthorPayload authorPayload) {
+    public Author findByIdAndUpdateAuthor(Long authorId, NewAuthorDTO authorDTO) {
 
         Author found = this.findAuthorById(authorId);
 
-        if (!found.getEmail().equals(authorPayload.getEmail()))
-            this.authorsRepository.findByEmail(authorPayload.getEmail()).ifPresent(author -> {
+        if (!found.getEmail().equals(authorDTO.email()))
+            this.authorsRepository.findByEmail(authorDTO.email()).ifPresent(author -> {
                 throw new BadRequestException("L'email " + author.getEmail() + " è già in uso!");
             });
 
-        found.setNome(authorPayload.getNome());
-        found.setCognome(authorPayload.getCognome());
-        found.setEmail(authorPayload.getEmail());
-        found.setEmail(authorPayload.getEmail());
-        found.setAvatar("https://ui-avatars.com/api?name=" + authorPayload.getNome() + "+" + authorPayload.getCognome());
+        found.setNome(authorDTO.nome());
+        found.setCognome(authorDTO.cognome());
+        found.setEmail(authorDTO.email());
+        found.setEmail(authorDTO.email());
+        found.setAvatar("https://ui-avatars.com/api?name=" + authorDTO.nome() + "+" + authorDTO.cognome());
 
         Author modifiedAuthor = this.authorsRepository.save(found);
 

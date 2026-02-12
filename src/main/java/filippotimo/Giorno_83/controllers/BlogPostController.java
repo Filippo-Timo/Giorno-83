@@ -10,13 +10,18 @@ package filippotimo.Giorno_83.controllers;
 
 */
 
+import filippotimo.Giorno_83.Exceptions.ValidationException;
 import filippotimo.Giorno_83.entities.BlogPost;
-import filippotimo.Giorno_83.payloads.NewBlogPostPayload;
+import filippotimo.Giorno_83.payloads.NewBlogPostDTO;
 import filippotimo.Giorno_83.services.BlogPostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/blogPosts")
@@ -50,15 +55,24 @@ public class BlogPostController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED) // Questo serve per ricevere un codice 201 se ha successo la creazione
-    public BlogPost createBlogPost(@RequestBody NewBlogPostPayload blogPostPayload) {
-        return this.blogPostService.saveBlogPost(blogPostPayload);
+    public BlogPost createBlogPost(@RequestBody @Validated NewBlogPostDTO newBlogPostDTO, BindingResult validationResult) {
+        if (validationResult.hasErrors()) {
+            List<String> errorsList = validationResult.getFieldErrors()
+                    .stream()
+                    .map(fieldError -> fieldError.getDefaultMessage())
+                    .toList();
+
+            throw new ValidationException(errorsList);
+        } else {
+            return this.blogPostService.saveBlogPost(newBlogPostDTO);
+        }
     }
 
     // 4. PUT /blogPosts/123 -> Modifica lo specifico blog post (BlogPost)
 
     @PutMapping("/{blogPostId}")
-    public BlogPost findBlogPostByIdAndUpdate(@PathVariable Long blogPostId, @RequestBody NewBlogPostPayload blogPostPayload) {
-        return this.blogPostService.findByIdAndUpdateBlogPost(blogPostId, blogPostPayload);
+    public BlogPost findBlogPostByIdAndUpdate(@PathVariable Long blogPostId, @RequestBody NewBlogPostDTO newBlogPostDTO) {
+        return this.blogPostService.findByIdAndUpdateBlogPost(blogPostId, newBlogPostDTO);
     }
 
     // 5. DELETE /blogPosts/123 -> Cancella lo specifico blog post (void)

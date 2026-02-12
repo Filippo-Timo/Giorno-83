@@ -10,13 +10,18 @@ package filippotimo.Giorno_83.controllers;
 
  */
 
+import filippotimo.Giorno_83.Exceptions.ValidationException;
 import filippotimo.Giorno_83.entities.Author;
-import filippotimo.Giorno_83.payloads.NewAuthorPayload;
+import filippotimo.Giorno_83.payloads.NewAuthorDTO;
 import filippotimo.Giorno_83.services.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/authors")
@@ -50,15 +55,25 @@ public class AuthorCotroller {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED) // Questo serve per ricevere un codice 201 se ha successo la creazione
-    public Author createAuthor(@RequestBody NewAuthorPayload authorPayload) {
-        return this.authorService.saveAuthor(authorPayload);
+    public Author createAuthor(@RequestBody @Validated NewAuthorDTO newAuthorDTO, BindingResult validationResult) {
+        if (validationResult.hasErrors()) {
+            List<String> errorsList = validationResult.getFieldErrors()
+                    .stream()
+                    .map(fieldError -> fieldError.getDefaultMessage())
+                    .toList();
+
+            throw new ValidationException(errorsList);
+        } else {
+            return this.authorService.saveAuthor(newAuthorDTO);
+        }
+
     }
 
     // 4. PUT /authors/123 -> Modifica lo specifico autore (Author)
 
     @PutMapping("/{authorId}")
-    public Author findAuthorByIdAndUpdate(@PathVariable Long authorId, @RequestBody NewAuthorPayload authorPayload) {
-        return this.authorService.findByIdAndUpdateAuthor(authorId, authorPayload);
+    public Author findAuthorByIdAndUpdate(@PathVariable Long authorId, @RequestBody NewAuthorDTO newAuthorDTO) {
+        return this.authorService.findByIdAndUpdateAuthor(authorId, newAuthorDTO);
     }
 
     // 5. DELETE /authors/123 -> Cancella lo specifico autore (void)
