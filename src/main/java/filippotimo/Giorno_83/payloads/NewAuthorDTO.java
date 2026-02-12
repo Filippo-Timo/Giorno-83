@@ -1,9 +1,6 @@
 package filippotimo.Giorno_83.payloads;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
 
@@ -18,6 +15,7 @@ public record NewAuthorDTO(
         @Email(message = "L'indirizzo email inserito non è nel formato corretto!")
         String email,
         @NotNull(message = "La data di nascita è obbligatoria") // ! ! ! NON SI USA @NotBlank PER I LOCAL DATE ! ! !
+        @Past
         LocalDate dataDiNascita
 ) {
 }

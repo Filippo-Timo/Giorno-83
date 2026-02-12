@@ -2,6 +2,7 @@ package filippotimo.Giorno_83.payloads;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 
 public record NewBlogPostDTO(
@@ -14,6 +15,7 @@ public record NewBlogPostDTO(
         @NotBlank(message = "Il contenuto è obbligatorio")
         @Size(max = 500, message = "Limite massimo di 500 caratteri raggiunto")
         String contenuto,
+        @PositiveOrZero
         int tempoDiLettura,
         @NotNull(message = "L'ID dell'autore è obbligatorio")
         Long autohorId
